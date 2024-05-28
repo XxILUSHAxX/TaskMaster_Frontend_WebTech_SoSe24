@@ -13,8 +13,33 @@ export default {
   name: 'App',
   components: {
     HomePage,
-    HelloWorld,
-
+    HelloWorld
+  },
+  data() {
+    return {
+      items: []
+    };
+  },
+  methods: {
+    loadThings() {
+      const baseURL = process.env.VUE_APP_BACKEND_BASE_URL; // Verwende die korrekte Umgebungsvariable
+      const endpoint = baseURL + '/hello'; // Stelle sicher, dass der Endpoint korrekt ist
+      const requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      };
+      fetch(endpoint, requestOptions)
+          .then(response => response.json())
+          .then(result => {
+            result.forEach(thing => {
+              this.items.push(thing);
+            });
+          })
+          .catch(error => console.log('error', error));
+    }
+  },
+  created() {
+    this.loadThings(); // Rufe die Methode auf, wenn die Komponente erstellt wird
   }
 }
 </script>
