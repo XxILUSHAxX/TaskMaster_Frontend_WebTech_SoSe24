@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+.todo-item {
+    word-wrap: break-word;
+    max-width: 240px; /* Adjust this value to ensure it fits approximately 50 characters */
+}
