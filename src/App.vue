@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Vue.js Todo List</h1>
+    <h1>Todo List</h1>
     <Home />
   </div>
 </template>

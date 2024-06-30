@@ -1,79 +1,112 @@
 <template>
   <div class="board">
-    <Column title="Todo" :items="todoItems" @add-item="addItem" @update-items="updateItems" />
-    <Column title="Doing" :items="doingItems" @update-items="updateItems" />
-    <Column title="Done" :items="doneItems" @update-items="updateItems" />
+    <Column title="To-Do" :items="todoItems" @add-item="addItem" @update-items="updateItems" @delete-item="deleteTask" @edit-item="editTask" @update-priority="updatePriority" />
+    <Column title="Doing" :items="doingItems" @update-items="updateItems" @delete-item="deleteTask" @edit-item="editTask" @update-priority="updatePriority" />
+    <Column title="Done" :items="doneItems" @update-items="updateItems" @delete-item="deleteTask" @edit-item="editTask" />
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Column from '../components/ColumnTable.vue';
 
 export default {
   name: 'HomePage',
   components: { Column },
   setup() {
-    const todoItems = ref(['Item 1', 'Item 2']);
-    const doingItems = ref(['Item 3']);
-    const doneItems = ref(['Item 4']);
+    const tasks = ref([]);
+    const backendBaseUrl = process.env.VUE_APP_BACKEND_BASE_URL;
 
-    const addItem = (item) => {
-      todoItems.value.push(item);
-    };
+    const todoItems = computed(() => tasks.value.filter(task => task.status === 'To-Do'));
+    const doingItems = computed(() => tasks.value.filter(task => task.status === 'Doing'));
+    const doneItems = computed(() => tasks.value.filter(task => task.status === 'Done'));
 
-    const updateItems = ({ item, from, to }) => {
-      switch (`${from}-${to}`) {
-        case 'todo-doing':
-          moveTodoToDoing(item);
-          break;
-        case 'doing-todo':
-          moveDoingToTodo(item);
-          break;
-        case 'doing-done':
-          moveDoingToDone(item);
-          break;
-        case 'todo-done':
-          moveTodoToDone(item);
-          break;
-        default:
-          break;
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(`${backendBaseUrl}/tasks`);
+        tasks.value = await response.json();
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
       }
     };
 
-    const moveTodoToDoing = (item) => {
-      const index = todoItems.value.indexOf(item);
-      if (index > -1) {
-        todoItems.value.splice(index, 1);
-        doingItems.value.push(item);
+    const addItem = async (description) => {
+      const newTask = { description, priority: 'Low', status: 'To-Do' }; // Default values
+      try {
+        const response = await fetch(`${backendBaseUrl}/tasks`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTask),
+        });
+        const addedTask = await response.json();
+        tasks.value.push(addedTask);
+      } catch (error) {
+        console.error('Error adding task:', error);
       }
     };
 
-    const moveDoingToTodo = (item) => {
-      const index = doingItems.value.indexOf(item);
-      if (index > -1) {
-        doingItems.value.splice(index, 1);
-        todoItems.value.push(item);
+    const updateItems = async ({ item, to }) => {
+      const taskToUpdate = tasks.value.find(task => task.id === item.id);
+      if (taskToUpdate) {
+        taskToUpdate.status = to;
+        try {
+          await fetch(`${backendBaseUrl}/tasks/${taskToUpdate.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(taskToUpdate),
+          });
+        } catch (error) {
+          console.error('Error updating task:', error);
+        }
       }
     };
 
-    const moveDoingToDone = (item) => {
-      const index = doingItems.value.indexOf(item);
-      if (index > -1) {
-        doingItems.value.splice(index, 1);
-        doneItems.value.push(item);
+    const deleteTask = async (item) => {
+      try {
+        await fetch(`${backendBaseUrl}/tasks/${item.id}`, {
+          method: 'DELETE',
+        });
+        tasks.value = tasks.value.filter(task => task.id !== item.id);
+      } catch (error) {
+        console.error('Error deleting task:', error);
       }
     };
 
-    const moveTodoToDone = (item) => {
-      const index = todoItems.value.indexOf(item);
-      if (index > -1) {
-        todoItems.value.splice(index, 1);
-        doneItems.value.push(item);
+    const editTask = async (item) => {
+      const taskToUpdate = tasks.value.find(task => task.id === item.id);
+      if (taskToUpdate) {
+        taskToUpdate.description = item.description;
+        try {
+          await fetch(`${backendBaseUrl}/tasks/${taskToUpdate.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(taskToUpdate),
+          });
+        } catch (error) {
+          console.error('Error editing task:', error);
+        }
       }
     };
 
-    return { todoItems, doingItems, doneItems, addItem, updateItems };
+    const updatePriority = async (item) => {
+      const taskToUpdate = tasks.value.find(task => task.id === item.id);
+      if (taskToUpdate) {
+        taskToUpdate.priority = item.priority;
+        try {
+          await fetch(`${backendBaseUrl}/tasks/${taskToUpdate.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(taskToUpdate),
+          });
+        } catch (error) {
+          console.error('Error updating priority:', error);
+        }
+      }
+    };
+
+    onMounted(fetchTasks);
+
+    return { todoItems, doingItems, doneItems, addItem, updateItems, deleteTask, editTask, updatePriority };
   },
 };
 </script>
