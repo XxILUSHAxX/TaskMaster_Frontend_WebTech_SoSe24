@@ -111,10 +111,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.board {
-  display: flex;
-  gap: 16px;
-  padding: 20px;
-}
-</style>
+<style scoped src="../styles.css"></style>

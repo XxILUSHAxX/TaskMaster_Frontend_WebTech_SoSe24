@@ -1,10 +1,134 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+.board {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+}
+
+
+
+
+.column {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    width: 340px;
+    margin: 20px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.column:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+h2 {
+    color: #333333;
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .todo-item {
-    word-wrap: break-word;
-    max-width: 240px; /* Adjust this value to ensure it fits approximately 50 characters */
+    background-color: #f9fafb;
+    border: 1px solid #e0e4e8;
+    border-radius: 10px;
+    padding: 18px;
+    position: relative;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.todo-item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #777777;
+    font-size: 18px;
+    transition: color 0.2s;
+}
+
+.action-button:hover {
+    color: #333333;
+}
+
+.priority-dropdown {
+    margin-left: auto;
+}
+
+.priority-select {
+    padding: 8px 14px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-size: 14px;
+    color: #555555;
+}
+
+.todo-item-content {
+    margin-top: 10px;
+}
+
+.task-description {
+    margin: 0;
+    font-size: 16px;
+    color: #333333;
+    line-height: 1.5;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.edit-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.move-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.add-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    margin-top: 18px;
+    font-size: 16px;
+}
+
+@media screen and (max-width: 600px) {
+    .column {
+        width: 100%;
+    }
 }
